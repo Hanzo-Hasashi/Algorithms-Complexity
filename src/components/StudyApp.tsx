@@ -65,16 +65,40 @@ export default function StudyApp({ profile, onSignOut }: Props) {
     }
   }, [hasAccess])
 
-  // Intercept nav clicks for locked sections
+
+  // Navigation state
+  const [activeSection, setActiveSection] = useState('overview');
+
+  // Navigation click handler
   function handleNavClick(e: React.MouseEvent) {
-    if (!hasAccess) {
-      const target = e.target as HTMLElement
-      const navItem = target.closest('.nav-item') as HTMLElement | null
-      if (navItem && navItem.getAttribute('data-locked') === 'true') {
-        e.stopPropagation()
-        e.preventDefault()
-        return false
-      }
+    const target = e.target as HTMLElement;
+    const navItem = target.closest('.nav-item') as HTMLElement | null;
+    if (!navItem) return;
+    const navId = navItem.id;
+    // Map nav id to section id
+    const sectionMap: Record<string, string> = {
+      'nav-overview': 'overview',
+      'nav-logs': 'logs',
+      'nav-bigoh': 'bigoh',
+      'nav-recursion': 'recursion',
+      'nav-sorting': 'sorting',
+      'nav-ds': 'ds',
+      'nav-trees': 'trees',
+      'nav-avl': 'avl',
+      'nav-hashing': 'hashing',
+      'nav-graphs': 'graphs',
+      'nav-quiz': 'quiz',
+      'nav-simulations': 'simulations',
+      'nav-cheatsheet': 'cheatsheet',
+      'nav-bookmarks': 'bookmarks',
+    };
+    const section = sectionMap[navId];
+    // Only allow access if user has access or it's the free topic (logs/overview)
+    const freeSections = ['overview', 'logs'];
+    if (hasAccess || freeSections.includes(section)) {
+      setActiveSection(section);
+    } else {
+      // Optionally show a toast or message here
     }
   }
 
@@ -258,27 +282,27 @@ export default function StudyApp({ profile, onSignOut }: Props) {
 
         <div className="layout">
           <div className="sidebar">
-            <div className="nav-item active" id="nav-overview"><span className="nav-dot" id="dot-overview"></span>Home<span className="nav-badge">Start</span></div>
+            <div className={`nav-item${activeSection==='overview' ? ' active' : ''}`} id="nav-overview"><span className="nav-dot" id="dot-overview"></span>Home<span className="nav-badge">Start</span></div>
             <div className="nav-sep"></div>
-            <div className="nav-item" id="nav-logs"><span className="nav-dot" id="dot-logs"></span>1. Logarithms<span className="nav-badge">3Q</span></div>
-            <div className="nav-item" id="nav-bigoh"><span className="nav-dot" id="dot-bigoh"></span>2. Big-O<span className="nav-badge">{hasAccess ? '6Q' : '🔒'}</span></div>
-            <div className="nav-item" id="nav-recursion"><span className="nav-dot" id="dot-recursion"></span>3. Recursion<span className="nav-badge">{hasAccess ? '4Q' : '🔒'}</span></div>
-            <div className="nav-item" id="nav-sorting"><span className="nav-dot" id="dot-sorting"></span>4. Sorting<span className="nav-badge">{hasAccess ? '3Q' : '🔒'}</span></div>
-            <div className="nav-item" id="nav-ds"><span className="nav-dot" id="dot-ds"></span>5. Stacks &amp; Queues<span className="nav-badge">{hasAccess ? '4Q' : '🔒'}</span></div>
-            <div className="nav-item" id="nav-trees"><span className="nav-dot" id="dot-trees"></span>6. Trees &amp; BST<span className="nav-badge">{hasAccess ? '4Q' : '🔒'}</span></div>
-            <div className="nav-item" id="nav-avl"><span className="nav-dot" id="dot-avl"></span>7. AVL Trees<span className="nav-badge">{hasAccess ? '4Q' : '🔒'}</span></div>
-            <div className="nav-item" id="nav-hashing"><span className="nav-dot" id="dot-hashing"></span>8. Hashing<span className="nav-badge">{hasAccess ? '2Q' : '🔒'}</span></div>
-            <div className="nav-item" id="nav-graphs"><span className="nav-dot" id="dot-graphs"></span>9. Graphs<span className="nav-badge">{hasAccess ? '3Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='logs' ? ' active' : ''}`} id="nav-logs"><span className="nav-dot" id="dot-logs"></span>1. Logarithms<span className="nav-badge">3Q</span></div>
+            <div className={`nav-item${activeSection==='bigoh' ? ' active' : ''}`} id="nav-bigoh"><span className="nav-dot" id="dot-bigoh"></span>2. Big-O<span className="nav-badge">{hasAccess ? '6Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='recursion' ? ' active' : ''}`} id="nav-recursion"><span className="nav-dot" id="dot-recursion"></span>3. Recursion<span className="nav-badge">{hasAccess ? '4Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='sorting' ? ' active' : ''}`} id="nav-sorting"><span className="nav-dot" id="dot-sorting"></span>4. Sorting<span className="nav-badge">{hasAccess ? '3Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='ds' ? ' active' : ''}`} id="nav-ds"><span className="nav-dot" id="dot-ds"></span>5. Stacks &amp; Queues<span className="nav-badge">{hasAccess ? '4Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='trees' ? ' active' : ''}`} id="nav-trees"><span className="nav-dot" id="dot-trees"></span>6. Trees &amp; BST<span className="nav-badge">{hasAccess ? '4Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='avl' ? ' active' : ''}`} id="nav-avl"><span className="nav-dot" id="dot-avl"></span>7. AVL Trees<span className="nav-badge">{hasAccess ? '4Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='hashing' ? ' active' : ''}`} id="nav-hashing"><span className="nav-dot" id="dot-hashing"></span>8. Hashing<span className="nav-badge">{hasAccess ? '2Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='graphs' ? ' active' : ''}`} id="nav-graphs"><span className="nav-dot" id="dot-graphs"></span>9. Graphs<span className="nav-badge">{hasAccess ? '3Q' : '🔒'}</span></div>
             <div className="nav-sep"></div>
-            <div className="nav-item" id="nav-quiz"><span className="nav-dot" id="dot-quiz"></span>&#9998; Practice Quiz<span className="nav-badge">{hasAccess ? '20Q' : '🔒'}</span></div>
-            <div className="nav-item" id="nav-simulations"><span className="nav-dot" id="dot-simulations"></span>&#9654; Simulations{!hasAccess && ' 🔒'}</div>
-            <div className="nav-item" id="nav-cheatsheet"><span className="nav-dot" id="dot-cheatsheet"></span>&#9733; Cheat Sheet{!hasAccess && ' 🔒'}</div>
-            <div className="nav-item" id="nav-bookmarks"><span className="nav-dot" id="dot-bookmarks"></span>&#10084; Bookmarks</div>
+            <div className={`nav-item${activeSection==='quiz' ? ' active' : ''}`} id="nav-quiz"><span className="nav-dot" id="dot-quiz"></span>&#9998; Practice Quiz<span className="nav-badge">{hasAccess ? '20Q' : '🔒'}</span></div>
+            <div className={`nav-item${activeSection==='simulations' ? ' active' : ''}`} id="nav-simulations"><span className="nav-dot" id="dot-simulations"></span>&#9654; Simulations{!hasAccess && ' 🔒'}</div>
+            <div className={`nav-item${activeSection==='cheatsheet' ? ' active' : ''}`} id="nav-cheatsheet"><span className="nav-dot" id="dot-cheatsheet"></span>&#9733; Cheat Sheet{!hasAccess && ' 🔒'}</div>
+            <div className={`nav-item${activeSection==='bookmarks' ? ' active' : ''}`} id="nav-bookmarks"><span className="nav-dot" id="dot-bookmarks"></span>&#10084; Bookmarks</div>
           </div>
 
           <div className="main">
             {/* OVERVIEW */}
-            <div id="sec-overview" className="section active">
+            <div id="sec-overview" className={`section${activeSection==='overview' ? ' active' : ''}`}>
               <div className="sec-header"><div className="sec-title">CSC 3011 Study Companion</div></div>
               {!hasAccess && (
                 <div className="access-banner">
@@ -324,7 +348,9 @@ export default function StudyApp({ profile, onSignOut }: Props) {
             </div>
 
             {/* LOGARITHMS - Free topic */}
-            <div id="sec-logs" className="section">
+            <div id="sec-logs" className={`section${activeSection==='logs' ? ' active' : ''}`}>
+            {/* The rest of your hardcoded content sections should follow the same pattern: */}
+            {/* <div id="sec-bigoh" className={`section${activeSection==='bigoh' ? ' active' : ''}`}> ... </div> */}
               <div className="sec-header"><div className="sec-title">1. Logarithms</div><button className="done-btn" id="done-logs">Mark as done</button></div>
               <div className="notes-card">
                 <div className="notes-card-title">Notes</div>
