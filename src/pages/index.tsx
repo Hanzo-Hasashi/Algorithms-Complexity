@@ -14,31 +14,38 @@ export default function Home() {
   const [authError, setAuthError] = useState('')
   const [authLoading, setAuthLoading] = useState(false)
 
+
   useEffect(() => {
     // Handle initial session (covers the OAuth redirect-back case)
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('SESSION:', session);
       if (session?.user) {
-        setUser(session.user)
-        fetchOrCreateProfile(session.user)
+        setUser(session.user);
+        fetchOrCreateProfile(session.user);
       } else {
-        setLoading(false)
+        setLoading(false);
       }
-    })
+    });
 
     // Listen for future auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setUser(session.user)
-        fetchOrCreateProfile(session.user)
+        setUser(session.user);
+        fetchOrCreateProfile(session.user);
       } else {
-        setUser(null)
-        setProfile(null)
-        setLoading(false)
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
       }
-    })
+    });
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    console.log('USER:', user);
+    console.log('PROFILE:', profile);
+  }, [user, profile]);
 
   // Realtime: listen for profile updates (e.g. admin granting access)
   useEffect(() => {
@@ -57,19 +64,21 @@ export default function Home() {
   }, [user])
 
   // Fetch the profile row; if it doesn't exist yet (trigger race), create it
+
   async function fetchOrCreateProfile(authUser: any) {
-    setLoading(true)
+    setLoading(true);
     try {
       // First attempt
       let { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', authUser.id)
-        .single()
+        .single();
+      if (error) console.log('PROFILE FETCH ERROR:', error);
 
       // If no row yet (trigger may not have fired), upsert it
       if (error || !data) {
-        const { data: upserted } = await supabase
+        const { data: upserted, error: upsertError } = await supabase
           .from('profiles')
           .upsert({
             id: authUser.id,
@@ -83,24 +92,29 @@ export default function Home() {
             is_admin: false,
           }, { onConflict: 'id' })
           .select('*')
-          .single()
-        data = upserted
+          .single();
+        if (upsertError) console.log('PROFILE UPSERT ERROR:', upsertError);
+        data = upserted;
       }
 
       // If still null, retry once after a short delay
       if (!data) {
-        await new Promise(r => setTimeout(r, 1000))
-        const { data: retry } = await supabase
+        await new Promise(r => setTimeout(r, 1000));
+        const { data: retry, error: retryError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', authUser.id)
-          .single()
-        data = retry
+          .single();
+        if (retryError) console.log('PROFILE RETRY ERROR:', retryError);
+        data = retry;
+        if (!data) {
+          console.log('PROFILE STILL NULL AFTER UPSERT AND RETRY');
+        }
       }
 
-      setProfile(data)
+      setProfile(data);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
