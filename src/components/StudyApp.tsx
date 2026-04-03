@@ -9,6 +9,13 @@ interface Props {
 const LOCKED_SECTIONS = ['bigoh','recursion','sorting','ds','trees','avl','hashing','graphs','quiz','simulations','cheatsheet']
 
 export default function StudyApp({ profile, onSignOut }: Props) {
+  // Track open question per section and index
+  const [openQA, setOpenQA] = useState<{ [section: string]: number | null }>({});
+
+  // Handler for any .q-head click
+  function handleQAExpand(section: string, idx: number) {
+    setOpenQA(prev => ({ ...prev, [section]: prev[section] === idx ? null : idx }));
+  }
   const hasAccess = profile.has_access
   const containerRef = useRef<HTMLDivElement>(null)
   const prevAccessRef = useRef(hasAccess)
@@ -675,146 +682,39 @@ while S not empty: Q.enqueue(S.pop())`}</pre>Time: <b>O(n)</b></div></div></div>
               <div className="sec-header"><div className="sec-title">8. Hashing</div><button className="done-btn" id="done-hashing">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>Hash function:</b> h(x) = x % tableSize. Use a prime number as table size.</div>
-                <div className="nb"><b>Collision resolution:</b><br/>
-                Separate chaining: linked list at each slot<br/>
-                Open addressing: probe for next open slot<br/>
-                Quadratic probing: h(x)+1², h(x)+2², h(x)+3²…</div>
-                <div className="nb"><b>Load factor λ = items / tableSize.</b> Rehash when λ &gt; 0.5. New size = next prime after 2 × old size.</div>
-                <div className="nb"><b>Lazy deletion:</b> Mark deleted slots as DELETED (not empty) to preserve probe chains.</div>
-                <div className="kws"><span className="kw">h(x)=x%size</span><span className="kw">quadratic probing</span><span className="kw">load factor</span><span className="kw">lazy deletion</span><span className="kw">rehash</span></div>
-              </div>
-              <div className="subsec">Past paper questions</div>
-              <div className="q-acc" data-tags="hashing insert quadratic probing collision 2021 2022">
-                <div className="q-head"><button className="bk-btn" data-title="[HASHING] Insert with quadratic probing, rehash [2021/22]">&#9825;</button><div className="q-title">Insert [89,18,49,58,69] into hash table size 10 with quadratic probing. Rehash?</div><div className="q-meta"><span className="yr">2021/22</span><span className="pt">20 pts</span><span className="de h">hard</span></div><div className="chev">▼</div></div>
-                <div className="q-body"><div className="sol-lbl">Solution</div>
-                <div className="step"><div className="sn">1</div><div>89%10=9, 18%10=8, 49%10=9→collision→9+1=10%10=0, 58%10=8→collision→8+1=9→9+4=12%10=2, 69%10=9→collision→9+1=0→0+4=4</div></div>
-                <div className="step"><div className="sn">2</div><div>λ = 5/10 = 0.5. Rehash when λ &gt; 0.5. Next prime after 20 = <b>23</b>. Reinsert all using h(x)%23.</div></div></div>
-              </div>
-              <div className="q-acc" data-tags="hashing lazy deletion separate chaining 2020">
-                <div className="q-head"><button className="bk-btn" data-title="[HASHING] Lazy deletion and why open addressing needs it [2020]">&#9825;</button><div className="q-title">What is lazy deletion? Why is it needed in open addressing?</div><div className="q-meta"><span className="yr">2020</span><span className="pt">6 pts</span><span className="de m">medium</span></div><div className="chev">▼</div></div>
-                <div className="q-body"><div className="sol-lbl">Solution</div>
-                <div className="step"><div className="sn">1</div><div><b>Lazy deletion:</b> Mark a deleted slot as DELETED rather than EMPTY.</div></div>
-                <div className="step"><div className="sn">2</div><div><b>Why needed:</b> If we mark as EMPTY, a later search for an item that probed past this slot would stop prematurely (slot appears empty), incorrectly concluding the item is not in the table.</div></div></div>
-              </div>
-            </div>
-
-            {/* GRAPHS */}
-            <div id="sec-graphs" className={`section${activeSection==='graphs' ? ' active' : ''}`}> 
-              <div className="sec-header"><div className="sec-title">9. Graphs</div><button className="done-btn" id="done-graphs">Mark as done</button></div>
-              <div className="notes-card"><div className="notes-card-title">Notes</div>
-                <div className="nb"><b>Terminology:</b> Vertices (V), Edges (E). Complete graph: n(n−1)/2 edges. Directed = digraph.</div>
-                <div className="nb"><b>Dijkstra&apos;s algorithm:</b> Shortest path from source. Uses priority queue. O((V+E) log V). Cannot handle negative weights.</div>
-                <div className="nb"><b>Kruskal&apos;s algorithm:</b> Minimum spanning tree. Sort edges by weight, add if no cycle. O(E log E). MST has exactly n−1 edges.</div>
-                <div className="nb"><b>Adjacency matrix vs list:</b> Matrix: O(V²) space, O(1) edge lookup. List: O(V+E) space, better for sparse graphs.</div>
-                <div className="kws"><span className="kw">Dijkstra O((V+E)logV)</span><span className="kw">Kruskal O(E log E)</span><span className="kw">MST = n−1 edges</span><span className="kw">no negative weights (Dijkstra)</span></div>
-              </div>
-              <div className="subsec">Past paper questions</div>
-              <div className="q-acc" data-tags="graphs dijkstra shortest path 2021 2022 2023">
-                <div className="q-head"><button className="bk-btn" data-title="[GRAPHS] Dijkstra's algorithm: trace on weighted graph [2021-23]">&#9825;</button><div className="q-title">Trace Dijkstra&apos;s algorithm on a weighted graph from source A.</div><div className="q-meta"><span className="yr">2021–23</span><span className="pt">20 pts</span><span className="de h">hard</span></div><div className="chev">▼</div></div>
-                <div className="q-body"><div className="sol-lbl">Solution approach</div>
-                <div className="step"><div className="sn">1</div><div>Init: dist[source]=0, all others=∞. Mark all unvisited.</div></div>
-                <div className="step"><div className="sn">2</div><div>Pick unvisited vertex with min distance. Update neighbors: dist[v] = min(dist[v], dist[u]+weight(u,v)).</div></div>
-                <div className="step"><div className="sn">3</div><div>Mark current as visited. Repeat until all visited.</div></div>
-                <div className="warn" style={{marginTop:'8px'}}><div className="warn-lbl">Common error</div>Dijkstra fails with negative edge weights. Use Bellman-Ford instead.</div></div>
-              </div>
-              <div className="q-acc" data-tags="graphs kruskal MST minimum spanning tree 2020 2022">
-                <div className="q-head"><button className="bk-btn" data-title="[GRAPHS] Kruskal's MST algorithm trace [2020/22]">&#9825;</button><div className="q-title">Trace Kruskal&apos;s algorithm. What is the MST? How many edges?</div><div className="q-meta"><span className="yr">2020/22</span><span className="pt">16 pts</span><span className="de m">medium</span></div><div className="chev">▼</div></div>
-                <div className="q-body"><div className="sol-lbl">Solution approach</div>
-                <div className="step"><div className="sn">1</div><div>Sort all edges by weight ascending.</div></div>
-                <div className="step"><div className="sn">2</div><div>Add each edge if it doesn&apos;t form a cycle (use union-find). Skip if it does.</div></div>
-                <div className="step"><div className="sn">3</div><div>Stop when n−1 edges added. MST always has <b>n−1 edges</b> for n vertices.</div></div></div>
-              </div>
-              <div className="q-acc" data-tags="graphs adjacency matrix representation 2021">
-                <div className="q-head"><button className="bk-btn" data-title="[GRAPHS] Adjacency matrix vs adjacency list comparison [2021]">&#9825;</button><div className="q-title">Compare adjacency matrix and adjacency list representations.</div><div className="q-meta"><span className="yr">2021</span><span className="pt">8 pts</span><span className="de m">medium</span></div><div className="chev">▼</div></div>
-                <div className="q-body"><div className="sol-lbl">Solution</div>
-                <div className="step"><div className="sn">1</div><div><b>Matrix:</b> O(V²) space. O(1) edge lookup. Good for dense graphs.</div></div>
-                <div className="step"><div className="sn">2</div><div><b>List:</b> O(V+E) space. O(degree) edge lookup. Good for sparse graphs. Used by Dijkstra and Kruskal.</div></div></div>
-              </div>
-            </div>
-
-            {/* QUIZ */}
-            <div id="sec-quiz" className="section">
-              <div className="sec-header"><div className="sec-title">Practice Quiz</div></div>
-              <div className="qz-score"><div className="qz-big" id="qzScore">0/0</div><div className="qz-bar-wrap"><div className="qz-bar-bg"><div className="qz-bar-fill" id="qzBar" style={{width:'0%'}}></div></div><div className="qz-pct" id="qzPct">Score: 0%</div></div><button className="tbtn" id="resetQuizBtn">Reset quiz</button></div>
-              <div className="qz-filters">
-                <button className="qz-f active" data-filter="all">All topics</button>
-                <button className="qz-f" data-filter="bigoh">Big-O</button>
-                <button className="qz-f" data-filter="recursion">Recursion</button>
-                <button className="qz-f" data-filter="sorting">Sorting</button>
-                <button className="qz-f" data-filter="trees">Trees</button>
-                <button className="qz-f" data-filter="avl">AVL</button>
-              </div>
-              <div id="quizContainer"></div>
-            </div>
-
-            {/* SIMULATIONS */}
-            <div id="sec-simulations" className="section">
-              <div className="sec-header"><div className="sec-title">Interactive simulations</div></div>
-              <div className="notes-card">
-                <div className="notes-card-title">Sorting simulator</div>
-                <div className="sim-wrap">
-                  <div className="sim-controls">
-                    <select className="algo-sel" id="algoSel"><option value="bubble">Bubble sort</option><option value="selection">Selection sort</option><option value="insertion">Insertion sort</option></select>
-                    <button className="sim-btn" id="newArrBtn">New array</button>
-                    <button className="sim-btn primary" id="stepBtn">Next step ▶</button>
-                    <button className="sim-btn" id="autoBtn">Auto-play</button>
-                    <span style={{fontSize:'12px',color:'#888'}} id="simCounter">Step 0</span>
-                  </div>
-                  <div className="legend">
-                    <span><span className="leg-dot" style={{background:'#FAEEDA',border:'1px solid #BA7517'}}></span>Comparing</span>
-                    <span><span className="leg-dot" style={{background:'#EEEDFE',border:'1px solid #7F77DD'}}></span>Swapped</span>
-                    <span><span className="leg-dot" style={{background:'#E1F5EE',border:'1px solid #1D9E75'}}></span>Sorted</span>
-                  </div>
-                  <div className="sim-arr" id="simArr"></div>
-                  <div className="sim-log" id="simLog">Press &quot;Next step&quot; to begin sorting.</div>
-                  <div className="sim-stats">Comparisons: <span id="compCount">0</span> &nbsp;|&nbsp; Swaps: <span id="swapCount">0</span></div>
-                </div>
-              </div>
-              <div className="notes-card" style={{marginTop:'12px'}}>
-                <div className="notes-card-title">AVL tree builder — insert values and watch rotations happen</div>
-                <div className="avl-controls">
-                  <input className="avl-input" type="number" id="avlInput" placeholder="value" min={0} max={999} />
-                  <button className="sim-btn primary" id="avlInsertBtn">Insert</button>
-                  <button className="sim-btn" id="avlResetBtn">Clear tree</button>
-                  <span style={{fontSize:'12px',color:'#888'}}>Green=BF 0 &nbsp;|&nbsp; Purple=BF ±1 &nbsp;|&nbsp; Red=imbalanced</span>
-                </div>
-                <div className="sim-wrap">
-                  <div className="avl-canvas"><svg id="avlSvg" width="100%" height="240"></svg></div>
-                  <div className="avl-log" id="avlLog">Insert a value above to build the AVL tree.</div>
-                </div>
-              </div>
-            </div>
-
-            {/* CHEAT SHEET */}
-            <div id="sec-cheatsheet" className="section">
-              <div className="sec-header"><div className="sec-title">Cheat sheet — all formulas at a glance</div></div>
-              <div className="cheat-grid">
-                <div className="cheat-card"><div className="cheat-title">Logarithm rules</div>
-                  <div className="cheat-row"><span className="cheat-k">Product</span><span className="cheat-v">log(xy) = log x + log y</span></div>
-                  <div className="cheat-row"><span className="cheat-k">Quotient</span><span className="cheat-v">log(x/y) = log x − log y</span></div>
-                  <div className="cheat-row"><span className="cheat-k">Power</span><span className="cheat-v">log(xⁿ) = n · log x</span></div>
-                  <div className="cheat-row"><span className="cheat-k">Change base</span><span className="cheat-v">log_a(x) = log_b(x)/log_b(a)</span></div>
-                  <div className="cheat-row"><span className="cheat-k">log₄(2)</span><span className="cheat-v">= 0.5 ← memorise!</span></div>
-                </div>
-                <div className="cheat-card"><div className="cheat-title">Big-O: doubling N→2N</div>
-                  <div className="cheat-row"><span className="cheat-k">O(1)</span><span className="cheat-v">→ same time</span></div>
-                  <div className="cheat-row"><span className="cheat-k">O(log n)</span><span className="cheat-v">→ t + constant</span></div>
-                  <div className="cheat-row"><span className="cheat-k">O(n)</span><span className="cheat-v">→ 2t</span></div>
-                  <div className="cheat-row"><span className="cheat-k">O(n²)</span><span className="cheat-v">→ 4t</span></div>
-                  <div className="cheat-row"><span className="cheat-k">O(2ⁿ)</span><span className="cheat-v">→ t²</span></div>
-                </div>
-                <div className="cheat-card"><div className="cheat-title">Sorting: max comparisons &amp; swaps</div>
-                  <div className="cheat-row"><span className="cheat-k">Bubble — comp</span><span className="cheat-v">n(n−1)/2</span></div>
-                  <div className="cheat-row"><span className="cheat-k">Bubble — swap</span><span className="cheat-v">n(n−1)/2</span></div>
-                  <div className="cheat-row"><span className="cheat-k">Selection — comp</span><span className="cheat-v">n(n−1)/2</span></div>
-                  <div className="cheat-row"><span className="cheat-k">Selection — swap</span><span className="cheat-v">n−1 (always!)</span></div>
-                  <div className="cheat-row"><span className="cheat-k">Insertion — comp</span><span className="cheat-v">n(n−1)/2</span></div>
-                  <div className="cheat-row"><span className="cheat-k">Insertion — swap</span><span className="cheat-v">n(n−1)/2</span></div>
-                </div>
-                <div className="cheat-card"><div className="cheat-title">AVL rotations</div>
-                  <div className="cheat-row"><span className="cheat-k">LL (BF=+2,child=+1)</span><span className="cheat-v">right rotate</span></div>
-                  <div className="cheat-row"><span className="cheat-k">RR (BF=−2,child=−1)</span><span className="cheat-v">left rotate</span></div>
-                  <div className="cheat-row"><span className="cheat-k">LR (BF=+2,child=−1)</span><span className="cheat-v">double: L then R</span></div>
+                        {/* Patch: React-based expand/collapse for all .q-acc accordions */}
+                        <style>{`
+                          .q-acc.react-acc .q-body { display: none; }
+                          .q-acc.react-acc .q-body.open { display: block; }
+                          .q-acc.react-acc .chev { transition: transform 0.2s; }
+                          .q-acc.react-acc .chev.open { transform: rotate(180deg); }
+                        `}</style>
+                        {['logs','bigoh','recursion','sorting','ds','trees','avl','hashing','graphs'].map(section => {
+                          // Find all .q-acc for this section
+                          const secDiv = typeof window !== 'undefined' ? document.getElementById('sec-' + section) : null;
+                          if (!secDiv) return null;
+                          const accs = Array.from(secDiv.querySelectorAll('.q-acc'));
+                          accs.forEach((acc, idx) => {
+                            acc.classList.add('react-acc');
+                            const head = acc.querySelector('.q-head');
+                            const body = acc.querySelector('.q-body');
+                            const chev = acc.querySelector('.chev');
+                            if (head && body && chev) {
+                              head.onclick = (e) => {
+                                e.stopPropagation();
+                                setOpenQA(prev => ({ ...prev, [section]: prev[section] === idx ? null : idx }));
+                              };
+                              if (openQA[section] === idx) {
+                                body.classList.add('open');
+                                chev.classList.add('open');
+                              } else {
+                                body.classList.remove('open');
+                                chev.classList.remove('open');
+                              }
+                            }
+                          });
+                          return null;
+                        })}
                   <div className="cheat-row"><span className="cheat-k">RL (BF=−2,child=+1)</span><span className="cheat-v">double: R then L</span></div>
                 </div>
                 <div className="cheat-card"><div className="cheat-title">Recursion recurrences</div>
