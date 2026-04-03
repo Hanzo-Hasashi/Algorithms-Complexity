@@ -700,10 +700,12 @@ while S not empty: Q.enqueue(S.pop())`}</pre>Time: <b>O(n)</b></div></div></div>
                             const body = acc.querySelector('.q-body');
                             const chev = acc.querySelector('.chev');
                             if (head && body && chev) {
-                              head.onclick = (e) => {
-                                e.stopPropagation();
-                                setOpenQA(prev => ({ ...prev, [section]: prev[section] === idx ? null : idx }));
-                              };
+                              if (head instanceof HTMLElement) {
+                                head.onclick = (e) => {
+                                  e.stopPropagation();
+                                  setOpenQA(prev => ({ ...prev, [section]: prev[section] === idx ? null : idx }));
+                                };
+                              }
                               if (openQA[section] === idx) {
                                 body.classList.add('open');
                                 chev.classList.add('open');
