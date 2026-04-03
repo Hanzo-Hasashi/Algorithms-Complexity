@@ -390,7 +390,7 @@ export default function StudyApp({ profile, onSignOut }: Props) {
             </div>
 
             {/* LOCKED SECTIONS - content will be shown with overlay if no access */}
-            <div id="sec-bigoh" className="section">
+            <div id="sec-bigoh" className={`section${activeSection==='bigoh' ? ' active' : ''}`}> 
               <div className="sec-header"><div className="sec-title">2. Big-O Notation</div><button className="done-btn" id="done-bigoh">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>Big-O:</b> Upper bound on growth rate. O(f(n)) means the algorithm&apos;s running time grows at most as fast as f(n) for large n.</div>
@@ -442,7 +442,7 @@ export default function StudyApp({ profile, onSignOut }: Props) {
             </div>
 
             {/* RECURSION */}
-            <div id="sec-recursion" className="section">
+            <div id="sec-recursion" className={`section${activeSection==='recursion' ? ' active' : ''}`}> 
               <div className="sec-header"><div className="sec-title">3. Recursion</div><button className="done-btn" id="done-recursion">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>Recursion:</b> A function that calls itself on a smaller sub-problem. Must have a base case (stops recursion) and a recursive case (moves toward base).</div>
@@ -499,7 +499,7 @@ export default function StudyApp({ profile, onSignOut }: Props) {
             </div>
 
             {/* SORTING */}
-            <div id="sec-sorting" className="section">
+            <div id="sec-sorting" className={`section${activeSection==='sorting' ? ' active' : ''}`}> 
               <div className="sec-header"><div className="sec-title">4. Sorting Algorithms</div><button className="done-btn" id="done-sorting">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>Bubble Sort:</b> Compare adjacent pairs, swap if out of order. O(n²)</div>
@@ -548,7 +548,7 @@ export default function StudyApp({ profile, onSignOut }: Props) {
             </div>
 
             {/* DATA STRUCTURES */}
-            <div id="sec-ds" className="section">
+            <div id="sec-ds" className={`section${activeSection==='ds' ? ' active' : ''}`}> 
               <div className="sec-header"><div className="sec-title">5. Stacks &amp; Queues</div><button className="done-btn" id="done-ds">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>Stack (LIFO):</b> push adds to top, pop removes from top. Applications: function call stack, undo/redo.</div>
@@ -589,7 +589,7 @@ while S not empty: Q.enqueue(S.pop())`}</pre>Time: <b>O(n)</b></div></div></div>
             </div>
 
             {/* TREES */}
-            <div id="sec-trees" className="section">
+            <div id="sec-trees" className={`section${activeSection==='trees' ? ' active' : ''}`}> 
               <div className="sec-header"><div className="sec-title">6. Trees &amp; Binary Search Trees</div><button className="done-btn" id="done-trees">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>BST property:</b> left subtree &lt; node &lt; right subtree. Enables O(log n) average search.</div>
@@ -629,7 +629,7 @@ while S not empty: Q.enqueue(S.pop())`}</pre>Time: <b>O(n)</b></div></div></div>
             </div>
 
             {/* AVL */}
-            <div id="sec-avl" className="section">
+            <div id="sec-avl" className={`section${activeSection==='avl' ? ' active' : ''}`}> 
               <div className="sec-header"><div className="sec-title">7. AVL Trees</div><button className="done-btn" id="done-avl">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>Balance factor (BF) = h(left) − h(right).</b> Valid: {'{'}−1, 0, +1{'}'}. |BF| &gt; 1 = imbalance.</div>
@@ -671,7 +671,7 @@ while S not empty: Q.enqueue(S.pop())`}</pre>Time: <b>O(n)</b></div></div></div>
             </div>
 
             {/* HASHING */}
-            <div id="sec-hashing" className="section">
+            <div id="sec-hashing" className={`section${activeSection==='hashing' ? ' active' : ''}`}> 
               <div className="sec-header"><div className="sec-title">8. Hashing</div><button className="done-btn" id="done-hashing">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>Hash function:</b> h(x) = x % tableSize. Use a prime number as table size.</div>
@@ -699,7 +699,7 @@ while S not empty: Q.enqueue(S.pop())`}</pre>Time: <b>O(n)</b></div></div></div>
             </div>
 
             {/* GRAPHS */}
-            <div id="sec-graphs" className="section">
+            <div id="sec-graphs" className={`section${activeSection==='graphs' ? ' active' : ''}`}> 
               <div className="sec-header"><div className="sec-title">9. Graphs</div><button className="done-btn" id="done-graphs">Mark as done</button></div>
               <div className="notes-card"><div className="notes-card-title">Notes</div>
                 <div className="nb"><b>Terminology:</b> Vertices (V), Edges (E). Complete graph: n(n−1)/2 edges. Directed = digraph.</div>
